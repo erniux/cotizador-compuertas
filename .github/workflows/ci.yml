@@ -21,7 +21,7 @@ jobs:
       - name: Backend smoke (pip freeze)
         run: |
           docker build -t cotizador/backend:ci ./backend
-          timeout 30s docker run --rm cotizador/backend:ci python -c "import django; print('Django OK', django.get_version())" || echo "ERROR: El comando pip freeze no terminó correctamente"
+          timeout 30s docker run --rm --entrypoint python cotizador/backend:ci -c "import django; print('Django OK', django.get_version())" || echo "ERROR: El comando pip freeze no terminó correctamente"
 
       - name: Backend smoke (gunicorn)
         run: |
