@@ -20,6 +20,7 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: false
+          load: true  
           tags: cotizador/backend:ci
 
       # (Debug opcional)
