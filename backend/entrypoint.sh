@@ -26,5 +26,5 @@ python /app/app/manage.py collectstatic --noinput || true
 if [ "${DJANGO_DEBUG}" = "1" ]; then
   python /app/app/manage.py runserver 0.0.0.0:8000
 else
-  gunicorn app.wsgi:application --bind 0.0.0.0:8000 --workers 3
+  gunicorn app.app.wsgi:application --bind 0.0.0.0:8000 --workers 3
 fi
