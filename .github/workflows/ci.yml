@@ -29,6 +29,8 @@ jobs:
           docker run --rm -w /app cotizador/backend:ci gunicorn app.app.wsgi:application --bind 0.0.0.0:8000 --workers 1 --timeout 5 &
           sleep 5
           curl -I http://localhost:8000 || echo "Gunicorn failed"
+          docker stop backend_gunicorn_test
+          docker rm backend_gunicorn_test || true
 
       - name: Backend debug (import app.app.wsgi)
         run: |
