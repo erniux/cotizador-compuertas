@@ -32,8 +32,10 @@ jobs:
           docker run --rm --entrypoint python cotizador/backend:ci -c "import django; print('Django OK', django.get_version())"
 
       # Smoke 2 opcional: versión de gunicorn (sin arrancar servidor)
-      - name: Backend
-      
+      - name: Backend smoke (gunicorn version)
+        run: |
+          docker run --rm --entrypoint sh cotizador/backend:ci -lc "gunicorn --version"
+
   frontend-image:
     runs-on: ubuntu-latest
     steps:
