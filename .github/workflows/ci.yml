@@ -26,7 +26,7 @@ jobs:
       - name: Backend smoke (gunicorn)
         run: |
           docker build -t cotizador/backend:ci ./backend
-          docker run --rm -d -w /app --name backend_gunicorn_test cotizador/backend:ci gunicorn app.app.wsgi:application --bind 0.0.0.0:8000 --workers 1 --timeout 5
+          docker run --rm -d -w /app --name backend_gunicorn_test -p 8000:8000 cotizador/backend:ci gunicorn app.app.wsgi:application --bind 0.0.0.0:8000 --workers 1 --timeout 5
           sleep 5
           curl -I http://localhost:8000 || echo "Gunicorn failed"
           docker stop backend_gunicorn_test
