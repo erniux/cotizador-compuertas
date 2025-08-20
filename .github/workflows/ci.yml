@@ -35,6 +35,11 @@ jobs:
           docker build -t cotizador/backend:ci ./backend
           docker run --rm -w /app cotizador/backend:ci python -c "import app.wsgi"
 
+      - name: Backend debug (ls /app/app)
+        run: |
+          docker build -t cotizador/backend:ci ./backend
+          docker run --rm -w /app cotizador/backend:ci ls -l /app/app
+
   frontend-image:
     runs-on: ubuntu-latest
     steps:
