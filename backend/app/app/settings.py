@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+import os
 # Application definition
 
 INSTALLED_APPS = [
@@ -66,7 +67,13 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'app.wsgi.application'
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 # Database
