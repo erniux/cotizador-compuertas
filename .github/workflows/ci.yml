@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+
+jobs:
+  backend-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: false
+          tags: cotizador/backend:ci
+      - name: Backend smoke (pip freeze)
+        run: |
+          docker build -t cotizador/backend:ci ./backend
+          docker run --rm cotizador/backend:ci python -c "import django; print('Django OK', django.get_version())"
+
+  frontend-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: false
+          tags: cotizador/frontend:ci
+      - name: Frontend smoke (build)
+        run: |
+          docker build -t cotizador/frontend:ci ./frontend
+          cid=$(docker create cotizador/frontend:ci)
+          docker cp $cid:/usr/share/nginx/html/index.html ./index.html
+          docker rm $cid
+          test -s ./index.html && echo "Build OK"
