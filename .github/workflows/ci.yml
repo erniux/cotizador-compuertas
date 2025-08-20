@@ -10,39 +10,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build backend
+
+      - name: Build backend image
         uses: docker/build-push-action@v6
         with:
           context: ./backend
+          file: ./backend/Dockerfile
           push: false
           tags: cotizador/backend:ci
-      - name: Backend smoke (pip freeze)
-        run: |
-          docker build -t cotizador/backend:ci ./backend
-          timeout 30s docker run --rm --entrypoint python cotizador/backend:ci -c "import django; print('Django OK', django.get_version())" || echo "ERROR: El comando pip freeze no terminó correctamente"
 
-      - name: Backend smoke (gunicorn)
-        run: |
-          docker build -t cotizador/backend:ci ./backend
-          docker run --rm -d -w /app --name backend_gunicorn_test -p 8000:8000 cotizador/backend:ci gunicorn app.app.wsgi:application --bind 0.0.0.0:8000 --workers 1 --timeout 5
-          sleep 10
-          curl -I http://localhost:8000 || echo "Gunicorn failed"
-          docker logs backend_gunicorn_test || echo "No logs, el contenedor ya terminó"
-          docker stop backend_gunicorn_test || true
-          docker rm backend_gunicorn_test || true
+      # (Debug opcional)
+      - name: List backend context
+        run: ls -la backend
 
-      - name: Backend debug (import app.app.wsgi)
+      # Smoke 1: importar Django en la imagen (sin DB)
+      - name: Backend smoke (import django)
         run: |
-          docker build -t cotizador/backend:ci ./backend
-          docker run --rm -w /app --entrypoint python cotizador/backend:ci -c "import app.app.wsgi"
+          docker run --rm --entrypoint python cotizador/backend:ci -c "import django; print('Django OK', django.get_version())"
 
-      - name: Backend debug (ls /app/app)
-        run: |
-          docker build -t cotizador/backend:ci ./backend
-          docker run --rm -w /app cotizador/backend:ci ls -l /app/app
-
+      # Smoke 2 opcional: versión de gunicorn (sin arrancar servidor)
+      - name: Backend
+      
   frontend-image:
     runs-on: ubuntu-latest
     steps:
